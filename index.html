@@ -1,0 +1,290 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>D3.js作業二_WU CHIA CHEN</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <link rel="stylesheet" href="main.css" </head>
+
+    <body>
+
+        <h2>D3.js 第三週作業Data/Binding</h2>
+        <font id="chiachen">&nbsp;WU CHIA CHEN&nbsp;</font>
+        <hr>
+
+        <ul></ul>
+        <li>
+            <font class=exercise>Excercise 1:橫條圖</font>
+        </li>
+        </ul><br>
+
+        <body>
+            <svg width="1150" height="300" ></svg>
+
+            <script>
+                d3.json("invoice-taipei.json", function(dataSet) {
+                    var svg = d3.select("body>svg");
+
+
+                    //             橫條圖格式
+                    var barH = 20;
+                    var barP = 5;
+                    var barOriginX = 300;
+                    var barOriginY = 10;
+                    var textOriginX = barOriginX - 20;
+                    var textOriginY = barOriginY + barH * 0.8;
+                    //        篩選目標數值
+                    var fDataSet = dataSet.filter(function(d) {
+                        return d.date === "2016/8/1" &&
+                            d.cid === "A" &&
+                            d.amount > 1000000000;
+                    });
+                    //   綁定
+                    bind(fDataSet);
+                    render();
+
+                    //綁定函數
+
+                    function bind(dataSet) {
+                        //    Status1 資料及物件剛好
+                        var selection = d3.select("body>svg")
+                            .selectAll("g.bar1")
+                            .data(dataSet);
+                        //    Status 2補上少的物件
+                        selection.enter().append("g").attr({
+                            class: "bar1"
+                        });
+                        //    Status 3刪掉多的物件
+                        selection.exit().remove();
+                    }
+
+                    function render() {
+                        //    比例尺縮放
+                        var xScale = d3.scale.linear()
+                            .domain([0, d3.max(fDataSet, function(d) {
+                                return d.amount;
+                            })])
+                            .range([0, 300]);
+                        //畫橫條圖
+                        d3.selectAll("g.bar1") //用已經生成的群組及類別
+                            .append("rect") //會去父層找綁定，生成長條
+                            .attr({
+                                x: function(d) {
+                                    return barOriginX;
+                                },
+                                y: function(d, i) {
+                                    return barOriginY + (barH + barP) * i;
+                                },
+                                width: function(d) {
+                                    return xScale(d.amount);
+                                },
+                                height: function(d) {
+                                    return barH;
+                                },
+                                fill: function(d, i) {
+                                    return 'rgb(' + Math.floor(255 - 30 * i) + ',' +
+                                        Math.floor(255 - 30 * i) + ',0)';
+                                }
+                            });
+
+                        //加入產業別文字
+                        d3.selectAll("g.bar1")
+                            .append("text")
+                            .attr({
+                                x: function(d) {
+                                    return textOriginX;
+                                },
+                                y: function(d, i) {
+                                    return textOriginY + (barH + barP) * i;
+                                },
+                                "text-anchor": "end"
+                            }).text(function(d) {
+                                return d.industry;
+                            });
+
+                        //    加入發票數量文字
+                        d3.selectAll("g.bar1")
+                            .append("text")
+                            .attr({
+                                x: function(d) {
+                                    return barOriginX + xScale(d.amount) + 20;
+                                },
+                                y: function(d, i) {
+                                    return textOriginY + (barH + barP) * i;
+                                },
+                            }).text(function(d) {
+                                return d.amount;
+                            });
+                    }
+
+                });
+
+            </script>
+            <hr>
+
+            <!--   ///bar chart------>
+            <ul></ul>
+            <li>
+                <font class=exercise>Excercise 2:篩選</font>
+            </li>
+            </ul><br>
+  
+           <script>
+
+                var arr = [85, 60, 99, 49, 77, 82]; 
+
+                bind2(arr);
+                render2();
+
+                function bind2(dataSet){
+
+                    //status1
+                    var selection = d3.select("body")
+                                .selectAll("div")
+                                .data(dataSet);
+
+                    //status2 補上少的
+                    selection.enter().append("div"); 
+
+
+                    //status3 刪掉多的
+                    selection.exit().remove();
+
+                }  
+
+
+                function render2(){
+                    d3.selectAll("div")
+                        .text(
+                            function(d,i){
+                                return (i+1)+":"+d;
+                            })
+                        .style({
+                            color: function(d){
+                                        if(d<70){
+                                             return "rgb(159, 81, 33)";
+                                        }else{
+                                            return "black";
+                                        };} ,
+                    "font-size": "20px"
+                                    
+                        }); 
+                };
+
+    </script>
+            <hr>
+            <ul></ul>
+            <li>
+                <font class=exercise>Excercise 3:新增/移除柱狀圖</font>
+            </li>
+            </ul>
+            <input type="button" value="新增" onclick="Add()">
+            <input type="button" value="移除" onclick="Del()">
+            <script>
+             
+                var arr2 = [85, 60, 99, 49, 77, 82, 33];
+                var w = 1150,
+                    h = 300,
+                    p = 100;
+
+                makeSvg();
+                bind3(arr2);
+                render3();
+
+                function makeSvg() {
+                    d3.select("body")
+                        .append("svg")
+                        .attr({
+                            width: w,
+                            height: h,
+                            class: "svg3",
+                        background:"white"
+                        })
+                }
+
+
+                function bind3(dataSet) {
+
+                    //status1
+                    var selection = d3.select("body>svg.svg3")
+                        .selectAll("g.bar2")
+                        .data(dataSet);
+
+                    //status2 補上少的
+                    selection.enter().append("g").attr({
+                        class: "bar2"
+                    });
+
+
+                    //status3 刪掉多的
+                    selection.exit().remove();
+
+                }
+
+
+                function render3() {
+                    //每次畫畫前都先清乾淨
+                    d3.selectAll("g.bar2").selectAll("rect").remove();
+                    d3.selectAll("g.bar2").selectAll("text").remove();
+
+                    d3.selectAll("g.bar2")
+                        .append("rect") 
+                        .attr({
+                            x: function(d, i) {
+                                return p + 42 * i;
+                            },
+                            y: function(d, i) {
+                                return h - p - d;
+                            },
+                            width: 40,
+                            height: function(d, i) {
+                                return d;
+                            },
+                            fill: function(d) {
+                                if (d < 70) {
+                                    "rgb(237, 244, 62)";
+                                } else {
+                                    return "rgb(114, 118, 70)";
+                                }
+                            }
+                        });
+
+
+                    d3.selectAll("g.bar2")
+                        .append("text") 
+                        .attr({
+                            x: function(d, i) {
+                                return p + 42 * i + 20;
+                            },
+                            y: h - p + 16,
+                            "text-anchor": "middle"
+                        }).text(function(d) {
+                            return d;
+                        });
+
+                }
+
+                function random(n, m) {
+                    return Math.floor(Math.random() * (m - n + 1) + n);
+                }
+
+                function Add() {
+                    var num = random(10, 100);
+                    console.log(num);
+                    arr2.push(num);
+                    bind3(arr2);
+                    render3();
+                }
+
+                function Del() {
+                    arr2.pop();
+                    bind3(arr2);
+                    render3();
+                }
+
+            </script>
+
+        </body>
+
+</html>

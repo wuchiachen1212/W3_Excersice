@@ -1,0 +1,17 @@
+body{
+    color:white;
+    background:rgba(251, 255, 248, 0.86);font-family:Microsoft JhengHei ;
+}
+.exercise{;color:rgb(18, 160, 89);font-size:1.2rem;font-weight:bold;}
+#chiachen{background-color: #58bf0d;color:white;font-weight:bold}
+
+hr{
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+h3{color:rgb(20, 21, 19);font:2rem;font-family:Microsoft JhengHei }
+p{background-color: #fcf6ef; color:#63676a; font-size: 4rem;font-family:fantasy}
+li{color:rgb(18, 160, 89)}
+h2{color:#2c1303}
